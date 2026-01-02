@@ -1,0 +1,19 @@
+# Abaikan folder hasil compile (ini yang paling berat)
+/target/
+/build/
+/dist/
+/nbbuild/
+
+# Abaikan file settingan pribadi NetBeans
+/nbproject/private/
+/nbproject/project.properties
+/nbproject/genfiles.properties
+
+# Abaikan file sampah OS
+Thumbs.db
+.DS_Store
+
+# Abaikan file hasil compile Java
+*.class
+*.war
+*.jar
