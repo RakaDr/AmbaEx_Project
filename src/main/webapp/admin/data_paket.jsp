@@ -1,4 +1,12 @@
+<%@page import="java.util.List"%>
+<%@page import="com.mycompany.javaweb.model.Paket"%>
+<%@page import="com.mycompany.javaweb.dao.PaketDAO"%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%
+    if(session.getAttribute("user") == null) { response.sendRedirect("../login.jsp"); return; }
+    PaketDAO dao = new PaketDAO();
+    List<Paket> listPaket = dao.getAll();
+%>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -7,118 +15,87 @@
     <title>Data Paket - Amba Admin</title>
     <link rel="stylesheet" href="../css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #f1f5f9; }
-        .sidebar { min-height: 100vh; background: #003366; color: white; }
-        .sidebar .nav-link { color: rgba(255,255,255,0.8); margin-bottom: 5px; }
-        .sidebar .nav-link:hover { background: rgba(255,255,255,0.1); color: white; }
-        .sidebar .nav-link.active { background: #0d6efd; color: white; font-weight: bold; border-radius: 5px;}
+        body { font-family: 'Poppins', sans-serif; background-color: #eef2f5; }
+        .sidebar { min-height: 100vh; background: linear-gradient(180deg, #003366 0%, #001a33 100%); box-shadow: 4px 0 10px rgba(0,0,0,0.1); color: white; }
+        .sidebar .nav-link { color: rgba(255,255,255,0.7); margin-bottom: 8px; padding: 12px 20px; border-radius: 10px; transition: all 0.3s; font-weight: 500; }
+        .sidebar .nav-link:hover { background: rgba(255,255,255,0.1); color: white; padding-left: 25px; }
+        .sidebar .nav-link.active { background-color: #FF9900; color: #003366; font-weight: 700; box-shadow: 0 4px 10px rgba(255, 153, 0, 0.3); }
+        .card { border: none; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        .table thead th { background-color: #003366; color: white; border: none; padding: 15px; font-weight: 600; }
+        .table tbody td { padding: 15px; vertical-align: middle; border-bottom: 1px solid #f0f0f0; }
+        .table-hover tbody tr:hover { background-color: #f8f9fa; }
     </style>
 </head>
 <body>
-
 <div class="container-fluid">
     <div class="row">
-        
         <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
-            <a href="dashboard.jsp" class="d-flex align-items-center mb-4 text-white text-decoration-none">
-                <i class="bi bi-truck-fast fs-3 me-2 text-warning"></i><span class="fs-4 fw-bold">Amba Admin</span>
-            </a>
-            <hr>
-            <ul class="nav flex-column mb-auto">
-                <li class="nav-item"><a href="dashboard.jsp" class="nav-link"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a></li>
-                <li class="nav-item"><a href="input_paket.jsp" class="nav-link"><i class="bi bi-box-seam me-2"></i> Input Paket Baru</a></li>
-                <li class="nav-item"><a href="data_paket.jsp" class="nav-link active"><i class="bi bi-table me-2"></i> Data Paket</a></li>
-                <li class="nav-item"><a href="update_tracking.jsp" class="nav-link"><i class="bi bi-geo-alt me-2"></i> Update Tracking</a></li>
-            </ul>
-        </nav>
-
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div class="text-center mb-4 mt-2">
+                <i class="bi bi-box-seam-fill fs-1 text-warning"></i>
+                <h4 class="fw-bold mt-2"><span class="text-white">Amba</span><span style="color: #FF9900;">Ex</span></h4>
+            </div>
             
-            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-                <h1 class="h2">Data Semua Paket</h1>
-                <div class="btn-toolbar mb-2 mb-md-0">
-                    <a href="input_paket.jsp" class="btn btn-sm btn-primary fw-bold">
-                        <i class="bi bi-plus-lg"></i> Tambah Baru
-                    </a>
+            <div class="d-flex align-items-center mb-4 p-3 rounded-3" style="background: rgba(255,255,255,0.1);">
+                <i class="bi bi-person-circle fs-2 me-3 text-warning"></i>
+                <div style="line-height: 1.2;">
+                    <span class="d-block text-white-50" style="font-size: 0.8rem;">Logged in as:</span>
+                    <span class="fw-bold text-white"><%= session.getAttribute("nama_admin") %></span>
                 </div>
             </div>
 
-            <div class="card shadow-sm border-0">
-                <div class="card-header bg-white py-3">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h5 class="mb-0 mt-2 fw-bold text-primary">Daftar Transaksi</h5>
-                        </div>
-                        <div class="col-md-6">
-                            <form class="d-flex">
-                                <input class="form-control me-2" type="search" placeholder="Cari No Resi / Nama..." aria-label="Search">
-                                <button class="btn btn-outline-primary" type="submit">Cari</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+            <ul class="nav flex-column mb-auto">
+                <li class="nav-item"><a href="dashboard.jsp" class="nav-link"><i class="bi bi-grid-fill me-2"></i> Dashboard</a></li>
+                <li class="nav-item"><a href="input_paket.jsp" class="nav-link"><i class="bi bi-plus-square-fill me-2"></i> Input Paket</a></li>
+                <li class="nav-item"><a href="data_paket.jsp" class="nav-link active"><i class="bi bi-table me-2"></i> Data Paket</a></li>
+                <li class="nav-item"><a href="update_tracking.jsp" class="nav-link"><i class="bi bi-cursor-fill me-2"></i> Update Tracking</a></li>
+            </ul>
+            <hr>
+            <a href="../index.jsp" class="btn btn-danger w-100 fw-bold shadow-sm mt-2"><i class="bi bi-box-arrow-left me-2"></i> LOGOUT</a>
+        </nav>
+
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="fw-bold" style="color: #003366;">Data Semua Paket</h2>
+                <a href="input_paket.jsp" class="btn btn-primary rounded-pill px-4 fw-bold shadow-sm" style="background-color: #FF9900; border: none; color: #003366;">
+                    <i class="bi bi-plus-lg me-2"></i> Tambah Baru
+                </a>
+            </div>
+
+            <div class="card">
                 <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-striped align-middle mb-0">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>No Resi</th>
-                                    <th>Tanggal</th>
-                                    <th>Pengirim</th>
-                                    <th>Penerima</th>
-                                    <th>Tujuan</th>
-                                    <th>Layanan</th>
-                                    <th>Status</th>
-                                    <th class="text-center">Aksi</th>
-                                </tr>
+                    <div class="table-responsive rounded-3">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr><th>No Resi</th><th>Tanggal</th><th>Pengirim</th><th>Penerima</th><th>Tujuan</th><th>Layanan</th><th>Status</th><th class="text-center">Aksi</th></tr>
                             </thead>
                             <tbody>
+                                <% if (listPaket.isEmpty()) { %>
+                                    <tr><td colspan="8" class="text-center py-5 text-muted">Belum ada data paket.</td></tr>
+                                <% } else { 
+                                    for(Paket p : listPaket) {
+                                        String badge = p.getStatus().contains("DELIVERED") ? "bg-success" : (p.getStatus().contains("PROCESS") ? "bg-warning text-dark" : "bg-primary");
+                                %>
                                 <tr>
-                                    <td class="fw-bold text-primary">AMB-001</td>
-                                    <td>11 Des 2025</td>
-                                    <td>Rusdi</td>
-                                    <td>Fuad</td>
-                                    <td>Bekasi</td>
-                                    <td><span class="badge bg-info text-dark">REG</span></td>
-                                    <td><span class="badge bg-warning text-dark">ON PROCESS</span></td>
-                                    <td class="text-center">
-                                        <a href="update_tracking.jsp?resi=AMB-001" class="btn btn-sm btn-success" title="Update Lokasi"><i class="bi bi-geo-alt"></i></a>
-                                        <button class="btn btn-sm btn-warning" title="Edit"><i class="bi bi-pencil-square"></i></button>
-                                        <button class="btn btn-sm btn-danger" title="Hapus"><i class="bi bi-trash"></i></button>
-                                    </td>
+                                    <td class="fw-bold text-primary"><%= p.getNoResi() %></td>
+                                    <td><%= p.getTanggal() %></td>
+                                    <td><%= p.getNamaPengirim() %></td>
+                                    <td><%= p.getNamaPenerima() %></td>
+                                    <td><%= p.getKotaTujuan() %></td>
+                                    <td><span class="badge bg-light text-dark border"><%= p.getLayanan() %></span></td>
+                                    <td><span class="badge <%= badge %> rounded-pill px-3"><%= p.getStatus() %></span></td>
+                                    <td class="text-center"><a href="update_tracking.jsp?resi=<%= p.getNoResi() %>" class="btn btn-sm btn-outline-primary rounded-circle" title="Update Lokasi"><i class="bi bi-pencil-fill"></i></a></td>
                                 </tr>
-                                <tr>
-                                    <td class="fw-bold text-primary">AMB-002</td>
-                                    <td>10 Des 2025</td>
-                                    <td>Siti</td>
-                                    <td>Budi</td>
-                                    <td>Surabaya</td>
-                                    <td><span class="badge bg-warning text-dark">FLASH</span></td>
-                                    <td><span class="badge bg-success">DELIVERED</span></td>
-                                    <td class="text-center">
-                                        <a href="update_tracking.jsp?resi=AMB-002" class="btn btn-sm btn-success"><i class="bi bi-geo-alt"></i></a>
-                                        <button class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></button>
-                                        <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                                    </td>
-                                </tr>
+                                <% } } %>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="card-footer bg-white">
-                    <nav>
-                        <ul class="pagination justify-content-end mb-0">
-                            <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">Next</a></li>
-                        </ul>
-                    </nav>
+                <div class="card-footer bg-white py-3 border-0">
+                    <small class="text-muted fw-bold">Total: <%= listPaket.size() %> Paket</small>
                 </div>
             </div>
-
         </main>
     </div>
 </div>
