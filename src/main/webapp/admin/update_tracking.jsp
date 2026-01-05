@@ -41,7 +41,8 @@
 <body>
 <div class="container-fluid">
     <div class="row">
-        <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
+        
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
             <div class="text-center mb-4 mt-2">
                 <i class="bi bi-box-seam-fill fs-1 text-warning"></i>
                 <h4 class="fw-bold mt-2"><span class="text-white">Amba</span><span style="color: #FF9900;">Ex</span></h4>
@@ -60,12 +61,23 @@
                 <li class="nav-item"><a href="input_paket.jsp" class="nav-link"><i class="bi bi-plus-square-fill me-2"></i> Input Paket</a></li>
                 <li class="nav-item"><a href="data_paket.jsp" class="nav-link"><i class="bi bi-table me-2"></i> Data Paket</a></li>
                 <li class="nav-item"><a href="update_tracking.jsp" class="nav-link active"><i class="bi bi-cursor-fill me-2"></i> Update Tracking</a></li>
+                <li class="nav-item"><a href="pesan_masuk.jsp" class="nav-link"><i class="bi bi-chat-text-fill me-2"></i> Pesan Masuk</a></li>
             </ul>
             <hr>
             <a href="../index.jsp" class="btn btn-danger w-100 fw-bold shadow-sm mt-2"><i class="bi bi-box-arrow-left me-2"></i> LOGOUT</a>
         </nav>
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+            
+            <div class="d-md-none d-flex justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <h4 class="fw-bold m-0" style="color: #003366;">
+                    <span style="color: #003366;">Amba</span><span style="color: #FF9900;">Ex</span>
+                </h4>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation" style="background-color: #FF9900; border: none; color: #003366; font-weight: bold;">
+                    <i class="bi bi-list fs-4"></i> MENU
+                </button>
+            </div>
+
             <h2 class="fw-bold mb-4" style="color: #003366;">Update Tracking</h2>
             <% if(pesan.equals("sukses")) { %>
                 <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm"><i class="bi bi-check-circle-fill me-2"></i> Berhasil diupdate!<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
