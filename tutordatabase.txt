@@ -1,0 +1,154 @@
+Langkah 1: Login
+Buka aplikasi SQL Shell (psql).
+
+Tekan Enter untuk Server [localhost].
+
+Tekan Enter untuk Database [postgres].
+
+Tekan Enter untuk Port [5432].
+
+Tekan Enter untuk Username [postgres].
+
+Saat muncul Password for user postgres:, ketik password kamu (misal: raka).
+
+Catatan: Saat mengetik password, layar tidak akan menampilkan bintang atau huruf. Ketik saja lalu tekan Enter.
+
+Langkah 2: Buat & Masuk Database
+Ketik perintah ini lalu Enter:
+
+SQL
+
+CREATE DATABASE db_ambaex;
+Ketik perintah ini untuk masuk ke database baru:
+
+SQL
+
+\c db_ambaex
+(Harus muncul tulisan: "You are now connected to database...")
+
+Langkah 3: Jalankan Kode SQL
+Copy kode SQL lengkap di bawah ini.
+
+Kembali ke layar hitam SQL Shell.
+
+Klik Kanan mouse di layar hitam (ini otomatis melakukan Paste).
+
+Tunggu proses berjalan.
+
+Jika berhenti tapi belum selesai, tekan Enter sekali.
+
+📜 KODE SQL LENGKAP (Copy Semua Ini)
+SQL
+
+-- ==========================================
+-- DATABASE SCRIPT: AMBA EX PROJECT
+-- ==========================================
+
+-- 1. BERSIHKAN TABEL LAMA (RESET)
+-- Menggunakan CASCADE agar tabel yang berelasi ikut terhapus bersih
+DROP TABLE IF EXISTS feedback CASCADE;
+DROP TABLE IF EXISTS tracking CASCADE;
+DROP TABLE IF EXISTS paket CASCADE;
+DROP TABLE IF EXISTS layanan CASCADE;
+DROP TABLE IF EXISTS admin CASCADE;
+
+-- ==========================================
+-- 2. MEMBUAT TABEL BARU
+-- ==========================================
+
+-- Tabel ADMIN (Untuk Login Staff)
+CREATE TABLE admin (
+    id SERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nama_lengkap VARCHAR(100)
+);
+
+-- Tabel LAYANAN (Untuk Data Harga & Dropdown)
+CREATE TABLE layanan (
+    id SERIAL PRIMARY KEY,
+    nama_layanan VARCHAR(50),
+    estimasi VARCHAR(50),
+    harga_per_kg DECIMAL(10,2)
+);
+
+-- Tabel PAKET (Data Utama Transaksi)
+CREATE TABLE paket (
+    no_resi VARCHAR(20) PRIMARY KEY,
+    tanggal_input TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    nama_pengirim VARCHAR(100),
+    telp_pengirim VARCHAR(20),
+    kota_asal VARCHAR(50),
+    nama_penerima VARCHAR(100),
+    telp_penerima VARCHAR(20),
+    alamat_penerima TEXT,
+    kota_tujuan VARCHAR(50),
+    berat DECIMAL(5,2),
+    layanan VARCHAR(50),
+    isi_paket VARCHAR(100),
+    biaya DECIMAL(15,2),
+    status_terakhir VARCHAR(50) DEFAULT 'PICK UP'
+);
+
+-- Tabel TRACKING (Riwayat Perjalanan Paket - Relasi ke Paket)
+CREATE TABLE tracking (
+    id SERIAL PRIMARY KEY,
+    no_resi VARCHAR(20) REFERENCES paket(no_resi) ON DELETE CASCADE,
+    waktu TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    lokasi VARCHAR(100),
+    status VARCHAR(50),
+    keterangan TEXT
+);
+
+-- Tabel FEEDBACK (Pesan Masuk dari User)
+CREATE TABLE feedback (
+    id SERIAL PRIMARY KEY,
+    nama_pengirim VARCHAR(100),
+    email VARCHAR(100),
+    subjek VARCHAR(100),
+    pesan TEXT,
+    tanggal_kirim TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ==========================================
+-- 3. MENGISI DATA DUMMY (DATA CONTOH)
+-- ==========================================
+
+-- Data Admin (Login: admin / admin123)
+INSERT INTO admin (username, password, nama_lengkap) VALUES 
+('admin', 'admin123', 'Super Administrator'),
+('staff', 'staff123', 'Budi Santoso (Gudang)');
+
+-- Data Layanan (Wajib ada agar hitung ongkir jalan)
+INSERT INTO layanan (nama_layanan, estimasi, harga_per_kg) VALUES 
+('Amba REGULAR', '2-3 Hari', 10000),
+('Amba FLASH', '1 Hari', 18000),
+('Amba CARGO', '3-5 Hari', 45000);
+
+-- Data Paket (Contoh 1: Paket Sudah Sampai)
+INSERT INTO paket (no_resi, nama_pengirim, telp_pengirim, kota_asal, nama_penerima, telp_penerima, alamat_penerima, kota_tujuan, berat, layanan, isi_paket, biaya, status_terakhir) 
+VALUES ('AMB-882910', 'Joko Anwar', '08123456789', 'Jakarta', 'Siti Badriah', '08987654321', 'Jl. Malioboro No. 12', 'Yogyakarta', 2.0, 'Amba REGULAR', 'Baju Batik', 20000, 'DELIVERED');
+
+-- Data Paket (Contoh 2: Paket Masih Di Jalan)
+INSERT INTO paket (no_resi, nama_pengirim, telp_pengirim, kota_asal, nama_penerima, telp_penerima, alamat_penerima, kota_tujuan, berat, layanan, isi_paket, biaya, status_terakhir) 
+VALUES ('AMB-112233', 'Deddy Corbuzier', '081122334455', 'Bogor', 'Ivan Gunawan', '085544332211', 'Jl. Merdeka No. 45', 'Surabaya', 5.0, 'Amba CARGO', 'Alat Gym', 225000, 'ON PROCESS');
+
+-- Data Tracking (History Paket 1)
+INSERT INTO tracking (no_resi, lokasi, status, keterangan, waktu) VALUES 
+('AMB-882910', 'Jakarta', 'PICK UP', 'Paket telah diterima di Counter Jakarta', '2025-01-01 09:00:00'),
+('AMB-882910', 'Hub Jakarta', 'TRANSIT', 'Paket sedang disortir di Gudang Pusat', '2025-01-01 15:00:00'),
+('AMB-882910', 'Semarang', 'ON PROCESS', 'Paket dalam perjalanan ke Yogyakarta', '2025-01-02 08:00:00'),
+('AMB-882910', 'Yogyakarta', 'DELIVERED', 'Paket diterima oleh Siti (YBS)', '2025-01-03 14:30:00');
+
+-- Data Tracking (History Paket 2)
+INSERT INTO tracking (no_resi, lokasi, status, keterangan, waktu) VALUES 
+('AMB-112233', 'Bogor', 'PICK UP', 'Paket masuk di Drop Point Bogor', '2025-01-04 10:00:00'),
+('AMB-112233', 'Hub Jakarta', 'TRANSIT', 'Transit di Hub Logistik Jakarta', '2025-01-04 20:00:00');
+
+-- Data Feedback (Contoh Pesan Masuk)
+INSERT INTO feedback (nama_pengirim, email, subjek, pesan) VALUES 
+('Rina Nose', 'rina@gmail.com', 'Tanya Ongkir', 'Min, kirim ke Papua berapa lama ya?'),
+('Sule', 'sule@yahoo.com', 'Komplain', 'Paket saya kok nyasar ke Bandung?');
+
+-- SELESAI
+Setelah langkah ini selesai, project NetBeans kamu sudah siap dijalankan! 🚀
