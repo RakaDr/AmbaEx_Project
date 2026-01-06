@@ -176,4 +176,24 @@ public class PaketDAO {
         }
         return list;
     }
+    
+    // 6. HAPUS PAKET (DELETE)
+    public boolean hapusPaket(String resi) {
+        // Karena ada Foreign Key ON DELETE CASCADE di tabel tracking,
+        // Menghapus data di tabel 'paket' akan otomatis menghapus riwayatnya di 'tracking'.
+        String sql = "DELETE FROM paket WHERE no_resi = ?";
+        
+        try (Connection c = KoneksiDB.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            
+            ps.setString(1, resi);
+            
+            int hasil = ps.executeUpdate();
+            return hasil > 0; // Return true jika ada baris yang terhapus
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

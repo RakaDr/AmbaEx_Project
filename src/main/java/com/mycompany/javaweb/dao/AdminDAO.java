@@ -64,4 +64,23 @@ public class AdminDAO {
         }
         return nama;
     }
+    // Method untuk mendaftar admin baru
+    public boolean registerAdmin(String username, String password, String namaLengkap) {
+        String sql = "INSERT INTO admin (username, password, nama_lengkap) VALUES (?, ?, ?)";
+        
+        try (Connection c = KoneksiDB.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ps.setString(3, namaLengkap);
+            
+            int hasil = ps.executeUpdate();
+            return hasil > 0;
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

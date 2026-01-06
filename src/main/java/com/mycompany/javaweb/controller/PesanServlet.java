@@ -17,6 +17,20 @@ public class PesanServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        String aksi = request.getParameter("aksi");
+
+        // 1. LOGIKA KIRIM PESAN (DARI HALAMAN KONTAK USER)
+        if (aksi == null || aksi.isEmpty()) {
+            kirimPesan(request, response);
+        } 
+        // 2. LOGIKA HAPUS PESAN (DARI HALAMAN ADMIN)
+        else if (aksi.equals("hapus")) {
+            hapusPesan(request, response);
+        }
+    }
+
+    // Method Simpan Pesan Baru
+    private void kirimPesan(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String nama = request.getParameter("nama");
         String email = request.getParameter("email");
         String subjek = request.getParameter("subjek");
@@ -35,7 +49,6 @@ public class PesanServlet extends HttpServlet {
             int hasil = ps.executeUpdate();
             
             if(hasil > 0) {
-                // Redirect balik dengan status sukses
                 response.sendRedirect("main.jsp?halaman=contact&status=sukses");
             } else {
                 response.sendRedirect("main.jsp?halaman=contact&status=gagal");
@@ -44,6 +57,29 @@ public class PesanServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             response.sendRedirect("main.jsp?halaman=contact&status=error");
+        }
+    }
+
+    // Method Hapus Pesan
+    private void hapusPesan(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String id = request.getParameter("id");
+        String sql = "DELETE FROM feedback WHERE id = ?";
+        
+        try (Connection c = KoneksiDB.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            
+            ps.setInt(1, Integer.parseInt(id));
+            int hasil = ps.executeUpdate();
+            
+            if(hasil > 0) {
+                response.sendRedirect("admin/pesan_masuk.jsp?status=hapus_sukses");
+            } else {
+                response.sendRedirect("admin/pesan_masuk.jsp?status=hapus_gagal");
+            }
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendRedirect("admin/pesan_masuk.jsp?status=error");
         }
     }
 }

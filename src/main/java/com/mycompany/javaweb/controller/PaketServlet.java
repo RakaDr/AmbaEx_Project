@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-// INI SESUAI MATERI PDF: Menggunakan Servlet untuk memproses Input Data
 @WebServlet(name = "PaketServlet", urlPatterns = {"/PaketServlet"})
 public class PaketServlet extends HttpServlet {
 
@@ -18,9 +17,12 @@ public class PaketServlet extends HttpServlet {
             throws ServletException, IOException {
         
         String aksi = request.getParameter("aksi");
+        PaketDAO dao = new PaketDAO();
 
+        // ---------------------------------------------------------
+        // 1. LOGIKA SIMPAN (CREATE / INPUT DATA)
+        // ---------------------------------------------------------
         if (aksi != null && aksi.equals("simpan")) {
-            // 1. Tangkap Data dari Form (Sesuai PDF hal 20)
             Paket p = new Paket();
             p.setNoResi(request.getParameter("resi"));
             p.setNamaPengirim(request.getParameter("nama_pengirim"));
@@ -34,21 +36,37 @@ public class PaketServlet extends HttpServlet {
             p.setIsiPaket(request.getParameter("isi_paket"));
             
             try {
-                p.setBerat(Double.parseDouble(request.getParameter("berat")));
-                p.setBiaya(Double.parseDouble(request.getParameter("biaya")));
+                // Parsing angka, jika error/kosong set ke 0
+                String beratStr = request.getParameter("berat");
+                String biayaStr = request.getParameter("biaya");
+                
+                p.setBerat((beratStr != null && !beratStr.isEmpty()) ? Double.parseDouble(beratStr) : 0);
+                p.setBiaya((biayaStr != null && !biayaStr.isEmpty()) ? Double.parseDouble(biayaStr) : 0);
             } catch (Exception e) {
-                p.setBerat(0); p.setBiaya(0);
+                p.setBerat(0); 
+                p.setBiaya(0);
             }
 
-            // 2. Panggil DAO (Sesuai PDF hal 21)
-            PaketDAO dao = new PaketDAO();
-            boolean sukses = dao.simpanPaket(p);
-
-            // 3. Redirect kembali ke JSP dengan pesan
-            if (sukses) {
+            // Panggil DAO untuk simpan ke database
+            if (dao.simpanPaket(p)) {
                 response.sendRedirect("admin/input_paket.jsp?status=sukses");
             } else {
                 response.sendRedirect("admin/input_paket.jsp?status=gagal");
+            }
+        }
+        
+        // ---------------------------------------------------------
+        // 2. LOGIKA HAPUS (DELETE DATA) -- BAGIAN INI YANG BARU
+        // ---------------------------------------------------------
+        else if (aksi != null && aksi.equals("hapus")) {
+            String resi = request.getParameter("resi");
+            
+            if (dao.hapusPaket(resi)) {
+                // Jika berhasil, kembali ke halaman data_paket dengan notifikasi sukses
+                response.sendRedirect("admin/data_paket.jsp?status=hapus_sukses");
+            } else {
+                // Jika gagal
+                response.sendRedirect("admin/data_paket.jsp?status=hapus_gagal");
             }
         }
     }
