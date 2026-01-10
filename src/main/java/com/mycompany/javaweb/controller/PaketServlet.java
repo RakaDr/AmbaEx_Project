@@ -19,9 +19,7 @@ public class PaketServlet extends HttpServlet {
         String aksi = request.getParameter("aksi");
         PaketDAO dao = new PaketDAO();
 
-        // ---------------------------------------------------------
-        // 1. LOGIKA SIMPAN (CREATE / INPUT DATA)
-        // ---------------------------------------------------------
+        // 1. SIMPAN (CREATE / INPUT DATA)
         if (aksi != null && aksi.equals("simpan")) {
             Paket p = new Paket();
             p.setNoResi(request.getParameter("resi"));
@@ -36,7 +34,6 @@ public class PaketServlet extends HttpServlet {
             p.setIsiPaket(request.getParameter("isi_paket"));
             
             try {
-                // Parsing angka, jika error/kosong set ke 0
                 String beratStr = request.getParameter("berat");
                 String biayaStr = request.getParameter("biaya");
                 
@@ -47,7 +44,6 @@ public class PaketServlet extends HttpServlet {
                 p.setBiaya(0);
             }
 
-            // Panggil DAO untuk simpan ke database
             if (dao.simpanPaket(p)) {
                 response.sendRedirect("admin/input_paket.jsp?status=sukses");
             } else {
@@ -55,9 +51,8 @@ public class PaketServlet extends HttpServlet {
             }
         }
         
-        // ---------------------------------------------------------
-        // 2. LOGIKA HAPUS (DELETE DATA) -- BAGIAN INI YANG BARU
-        // ---------------------------------------------------------
+        
+        // 2. HAPUS (DELETE DATA)
         else if (aksi != null && aksi.equals("hapus")) {
             String resi = request.getParameter("resi");
             

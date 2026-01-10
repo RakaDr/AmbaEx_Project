@@ -149,7 +149,6 @@ public class PaketDAO {
     // 5. AMBIL RIWAYAT TRACKING (Untuk ditampilkan di Admin & User)
     public List<Tracking> getRiwayat(String resi) {
         List<Tracking> list = new ArrayList<>();
-        // Urutkan dari yang paling baru (DESC)
         String sql = "SELECT * FROM tracking WHERE no_resi = ? ORDER BY waktu DESC";
         
         try (Connection c = KoneksiDB.getConnection();
