@@ -67,6 +67,9 @@
                 <li class="nav-item"><a class="nav-link" href="main.jsp?halaman=home">Beranda</a></li>
                 <li class="nav-item"><a class="nav-link" href="main.jsp?halaman=tracking">Cek Resi</a></li>
                 <li class="nav-item"><a class="nav-link" href="main.jsp?halaman=ongkir">Cek Ongkir</a></li>
+                
+                <li class="nav-item"><a class="nav-link" href="main.jsp?halaman=gallery">Galeri</a></li>
+                
                 <li class="nav-item"><a class="nav-link" href="main.jsp?halaman=about">Tentang Kami</a></li>
                 <li class="nav-item"><a class="nav-link" href="main.jsp?halaman=contact">Kontak</a></li>
                 

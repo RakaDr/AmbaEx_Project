@@ -28,6 +28,10 @@
         %>
                 <jsp:include page="halaman/ongkir.jsp"/>
         <%
+            } else if(hal.equals("gallery")){
+        %>
+                <jsp:include page="halaman/gallery.jsp"/>
+        <%
             } else if(hal.equals("contact")){
         %>
                 <jsp:include page="halaman/contact.jsp"/>
